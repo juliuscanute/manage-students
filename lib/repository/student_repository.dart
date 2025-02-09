@@ -17,4 +17,11 @@ class StudentRepository {
   Future<void> deleteStudent(String studentId) {
     return _firestore.collection('students').doc(studentId).delete();
   }
+
+  Future<void> updateStudent(Student updatedStudent) {
+    return _firestore
+        .collection('students')
+        .doc(updatedStudent.id)
+        .update(updatedStudent.toMap());
+  }
 }

@@ -18,4 +18,8 @@ class StudentCubit extends Cubit<List<Student>> {
   Future<void> deleteStudent(String studentId) async {
     await _studentRepository.deleteStudent(studentId);
   }
+
+  Future<void> updateStudent(Student updatedStudent) async {
+    await _studentRepository.updateStudent(updatedStudent);
+  }
 }

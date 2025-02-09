@@ -1,18 +1,34 @@
-// create_student_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:managestudents/blocs/student_cubit.dart';
 import 'package:managestudents/models/student_data.dart';
 
-class CreateStudentPage extends StatefulWidget {
-  const CreateStudentPage({Key? key}) : super(key: key);
+class StudentFormPage extends StatefulWidget {
+  final Student? student;
+
+  const StudentFormPage({Key? key, this.student}) : super(key: key);
 
   @override
-  State<CreateStudentPage> createState() => _CreateStudentPageState();
+  State<StudentFormPage> createState() => _StudentFormPageState();
 }
 
-class _CreateStudentPageState extends State<CreateStudentPage> {
-  final TextEditingController _nameController = TextEditingController();
+class _StudentFormPageState extends State<StudentFormPage> {
+  late TextEditingController _nameController;
+  late bool _isEditing;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.student != null) {
+      // Existing student
+      _nameController = TextEditingController(text: widget.student?.name ?? '');
+      _isEditing = true;
+    } else {
+      // New student
+      _nameController = TextEditingController();
+      _isEditing = false;
+    }
+  }
 
   @override
   void dispose() {
@@ -20,14 +36,22 @@ class _CreateStudentPageState extends State<CreateStudentPage> {
     super.dispose();
   }
 
-  void _addStudent() {
+  void _saveStudent() {
     final studentName = _nameController.text;
     if (studentName.isNotEmpty) {
-      final newStudent = Student(
-        id: DateTime.now().toString(),
-        name: studentName,
-      );
-      context.read<StudentCubit>().addStudent(newStudent);
+      if (!_isEditing) {
+        final newStudent = Student(
+          id: DateTime.now().toString(),
+          name: studentName,
+        );
+        context.read<StudentCubit>().addStudent(newStudent);
+      } else {
+        final updatedStudent = Student(
+          id: widget.student!.id,
+          name: studentName,
+        );
+        context.read<StudentCubit>().updateStudent(updatedStudent);
+      }
       Navigator.of(context).pop();
     }
   }
@@ -36,7 +60,7 @@ class _CreateStudentPageState extends State<CreateStudentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Student'),
+        title: Text(_isEditing ? 'Edit Student' : 'Create Student'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,12 +68,15 @@ class _CreateStudentPageState extends State<CreateStudentPage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Student Name'),
+              decoration: InputDecoration(
+                labelText: 'Student Name',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _addStudent,
-              child: const Text('Add Student'),
+              onPressed: _saveStudent,
+              child: Text(_isEditing ? 'Update Student' : 'Add Student'),
             ),
           ],
         ),

@@ -1,4 +1,3 @@
-// create_class_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:managestudents/blocs/class_cubit.dart';
@@ -6,16 +5,27 @@ import 'package:managestudents/blocs/student_cubit.dart';
 import 'package:managestudents/models/class_data.dart';
 import 'package:managestudents/models/student_data.dart';
 
-class CreateClassPage extends StatefulWidget {
-  const CreateClassPage({Key? key}) : super(key: key);
+class ClassFormPage extends StatefulWidget {
+  final Class? classItem;
+
+  const ClassFormPage({Key? key, this.classItem}) : super(key: key);
 
   @override
-  State<CreateClassPage> createState() => _CreateClassPageState();
+  State<ClassFormPage> createState() => _ClassFormPageState();
 }
 
-class _CreateClassPageState extends State<CreateClassPage> {
+class _ClassFormPageState extends State<ClassFormPage> {
   final TextEditingController _nameController = TextEditingController();
   final Set<String> _selectedStudentIds = {};
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.classItem != null) {
+      _nameController.text = widget.classItem!.name;
+      _selectedStudentIds.addAll(widget.classItem!.studentIds);
+    }
+  }
 
   @override
   void dispose() {
@@ -23,15 +33,19 @@ class _CreateClassPageState extends State<CreateClassPage> {
     super.dispose();
   }
 
-  void _addClass() {
+  void _saveClass() {
     final className = _nameController.text;
     if (className.isNotEmpty) {
-      final newClass = Class(
-        id: DateTime.now().toString(),
+      final classItem = Class(
+        id: widget.classItem?.id ?? DateTime.now().toString(),
         name: className,
         studentIds: _selectedStudentIds.toList(),
       );
-      context.read<ClassCubit>().addClass(newClass);
+      if (widget.classItem == null) {
+        context.read<ClassCubit>().addClass(classItem);
+      } else {
+        context.read<ClassCubit>().updateClass(classItem);
+      }
       Navigator.of(context).pop();
     }
   }
@@ -40,7 +54,7 @@ class _CreateClassPageState extends State<CreateClassPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Class'),
+        title: Text(widget.classItem == null ? 'Create Class' : 'Edit Class'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -49,7 +63,10 @@ class _CreateClassPageState extends State<CreateClassPage> {
             // Class name input
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Class Name'),
+              decoration: const InputDecoration(
+                labelText: 'Class Name',
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
             const Text(
@@ -89,8 +106,9 @@ class _CreateClassPageState extends State<CreateClassPage> {
               ),
             ),
             ElevatedButton(
-              onPressed: _addClass,
-              child: const Text('Add Class'),
+              onPressed: _saveClass,
+              child:
+                  Text(widget.classItem == null ? 'Add Class' : 'Save Class'),
             ),
           ],
         ),

@@ -101,11 +101,25 @@ class _HomePageState extends State<HomePage>
     return Card(
       child: ListTile(
         title: Text(student.name),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () {
-            context.read<StudentCubit>().deleteStudent(student.id);
-          },
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  '/student',
+                  arguments: student,
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                context.read<StudentCubit>().deleteStudent(student.id);
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -116,11 +130,25 @@ class _HomePageState extends State<HomePage>
       child: ListTile(
         title: Text(classItem.name),
         subtitle: Text('Students: ${classItem.studentIds.length}'),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () {
-            context.read<ClassCubit>().deleteClass(classItem.id);
-          },
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                Navigator.of(context).pushNamed(
+                  '/class',
+                  arguments: classItem,
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                context.read<ClassCubit>().deleteClass(classItem.id);
+              },
+            ),
+          ],
         ),
       ),
     );
