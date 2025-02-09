@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "target": "manage-student-learning",
+    "target": "manage-students",
     "source": ".",
     "ignore": [
       "firebase.json",

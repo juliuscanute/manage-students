@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "manage-learning"
-  }
+  },
+  "targets": {
+    "manage-learning": {
+      "hosting": {
+        "manage-students": [
+          "manage-student-learning"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
