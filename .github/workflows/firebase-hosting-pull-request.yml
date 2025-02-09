@@ -23,11 +23,13 @@ jobs:
 
       - name: Clean previous build
         run: flutter clean
+        
+      - name: Prepare Public Directory
+        run: |
+          cp -r build/web/* public/
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MANAGE_LEARNING }}
           projectId: manage-learning
-        env:
-          FIREBASE_CLI_EXPERIMENTS: webframeworks
