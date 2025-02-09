@@ -23,6 +23,10 @@ jobs:
 
       - name: Clean previous build
         run: flutter clean
+
+      - name: Build Flutter Web
+        run: flutter build web --release        
+
         
       - name: Prepare Public Directory
         run: |
