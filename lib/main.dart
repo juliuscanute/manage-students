@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:managestudents/blocs/class_cubit.dart';
+import 'package:managestudents/blocs/student_cubit.dart';
 import 'package:managestudents/config/app_config.dart';
 import 'package:managestudents/config/app_router.dart';
 import 'package:managestudents/config/di.dart';
@@ -42,12 +44,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: BlocProvider(
-        create: (_) => cubit,
-        child: _getInitialPage(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<LoginCubit>()),
+        BlocProvider(create: (_) => getIt<ClassCubit>()),
+        BlocProvider(create: (_) => getIt<StudentCubit>()),
+      ],
+      child: MaterialApp(
+        home: _getInitialPage(),
+        onGenerateRoute: _appRouter.generateRoute,
       ),
-      onGenerateRoute: _appRouter.generateRoute,
     );
   }
 
