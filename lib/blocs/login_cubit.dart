@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:managestudents/login_repository.dart';
+import 'package:managestudents/repository/login_repository.dart';
 
 class LoginState {
   final bool isLoading;

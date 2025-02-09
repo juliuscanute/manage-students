@@ -1,13 +1,13 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'package:managestudents/di.dart';
-import 'package:managestudents/login_cubit.dart';
-import 'package:managestudents/login_page.dart';
-import 'package:managestudents/login_repository.dart';
+import 'package:managestudents/config/app_config.dart';
+import 'package:managestudents/config/app_router.dart';
+import 'package:managestudents/config/di.dart';
+import 'package:managestudents/blocs/login_cubit.dart';
+import 'package:managestudents/screens/home_page.dart';
+import 'package:managestudents/screens/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,36 +30,33 @@ void main() async {
 
   await setupInjection(mergedConfig);
 
-  final loginRepository = LoginRepository(getIt());
-  runApp(MyApp(loginRepository: loginRepository));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final LoginRepository loginRepository;
+  final AppRouter _appRouter = getIt<AppRouter>();
 
-  const MyApp({Key? key, required this.loginRepository}) : super(key: key);
+  final LoginCubit cubit = getIt<LoginCubit>();
+
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: BlocProvider(
-        create: (_) => LoginCubit(loginRepository),
-        child: const LoginPage(),
+        create: (_) => cubit,
+        child: _getInitialPage(),
       ),
+      onGenerateRoute: _appRouter.generateRoute,
     );
   }
-}
 
-Future<Map<String, dynamic>> loadConfig() async {
-  try {
-    final response = await http.get(Uri.parse('config.json'));
-    if (response.statusCode == 200) {
-      return json.decode(response.body) as Map<String, dynamic>;
+  Widget _getInitialPage() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return const HomePage();
     } else {
-      print('Failed to load config.json: ${response.statusCode}');
+      return const LoginPage();
     }
-  } catch (e) {
-    print('An error occurred while loading config.json: $e');
   }
-  return {};
 }
