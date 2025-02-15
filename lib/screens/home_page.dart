@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage>
             builder: (context, classes) {
               if (classes.isEmpty) {
                 return const Center(
-                  child: Text('There are no classes.\nUse the FAB to add one.'),
+                  child: Text('There are no classes.'),
                 );
               }
               return _buildGrid(
