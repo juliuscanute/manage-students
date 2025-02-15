@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:managestudents/blocs/class_cubit.dart';
 import 'package:managestudents/blocs/student_cubit.dart';
+import 'package:managestudents/blocs/test_cubit.dart';
 import 'package:managestudents/deck/category_screen_new.dart';
 import 'package:managestudents/models/class_data.dart';
 import 'package:managestudents/models/student_data.dart';
+import 'package:managestudents/screens/test_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,8 +24,8 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    // Three tabs: index 0 for Students, index 1 for Classes, and index 2 for Categories.
-    _tabController = TabController(length: 3, vsync: this);
+    // Four tabs: index 0 for Students, index 1 for Classes, index 2 for Categories, and index 3 for Tests.
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -42,7 +44,9 @@ class _HomePageState extends State<HomePage>
           tabs: const [
             Tab(text: 'Students'),
             Tab(text: 'Classes'),
-            Tab(text: 'Decks'), // Update the tab text
+            Tab(text: 'Tests'),
+            Tab(text: 'Decks'),
+            // Add the new tab here
           ],
         ),
       ),
@@ -77,8 +81,10 @@ class _HomePageState extends State<HomePage>
                   (classItem) => _buildClassCard(classItem));
             },
           ),
+          // Tests Tab
+          TestPage(),
           // Categories Tab
-          CategoryScreenNew(), // Add the new screen here
+          CategoryScreenNew(),
         ],
       ),
       floatingActionButton: _buildCollapsibleFab(),
