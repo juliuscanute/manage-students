@@ -56,62 +56,72 @@ class _ClassFormPageState extends State<ClassFormPage> {
       appBar: AppBar(
         title: Text(widget.classItem == null ? 'Create Class' : 'Edit Class'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Class name input
-            TextField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Class Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Associate Students:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            // List of students with checkboxes
-            Expanded(
-              child: BlocBuilder<StudentCubit, List<Student>>(
-                builder: (context, students) {
-                  if (students.isEmpty) {
-                    return const Center(
-                      child: Text('No students available for association.'),
-                    );
-                  }
-                  return ListView.builder(
-                    itemCount: students.length,
-                    itemBuilder: (context, index) {
-                      final student = students[index];
-                      return CheckboxListTile(
-                        title: Text(student.name),
-                        value: _selectedStudentIds.contains(student.id),
-                        onChanged: (bool? value) {
-                          setState(() {
-                            if (value == true) {
-                              _selectedStudentIds.add(student.id);
-                            } else {
-                              _selectedStudentIds.remove(student.id);
-                            }
-                          });
+      body: BlocBuilder<ClassCubit, ClassState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Class name input
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Class Name',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Associate Students:',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                // List of students with checkboxes
+                Expanded(
+                  child: BlocBuilder<StudentCubit, StudentState>(
+                    builder: (context, studentState) {
+                      if (studentState.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (studentState.students.isEmpty) {
+                        return const Center(
+                          child: Text('No students available for association.'),
+                        );
+                      }
+                      return ListView.builder(
+                        itemCount: studentState.students.length,
+                        itemBuilder: (context, index) {
+                          final student = studentState.students[index];
+                          return CheckboxListTile(
+                            title: Text(student.name),
+                            value: _selectedStudentIds.contains(student.id),
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (value == true) {
+                                  _selectedStudentIds.add(student.id);
+                                } else {
+                                  _selectedStudentIds.remove(student.id);
+                                }
+                              });
+                            },
+                          );
                         },
                       );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _saveClass,
+                  child: Text(
+                      widget.classItem == null ? 'Add Class' : 'Save Class'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: _saveClass,
-              child:
-                  Text(widget.classItem == null ? 'Add Class' : 'Save Class'),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

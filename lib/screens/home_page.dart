@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:managestudents/blocs/class_cubit.dart';
 import 'package:managestudents/blocs/student_cubit.dart';
@@ -47,25 +48,31 @@ class _HomePageState extends State<HomePage>
         controller: _tabController,
         children: [
           // Students Tab
-          BlocBuilder<StudentCubit, List<Student>>(
-            builder: (context, students) {
-              if (students.isEmpty) {
+          BlocBuilder<StudentCubit, StudentState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state.students.isEmpty) {
                 return const Center(child: Text('There are no students.'));
               }
-              return _buildGrid(
-                  context, students, (student) => _buildStudentCard(student));
+              return _buildGrid(context, state.students,
+                  (student) => _buildStudentCard(student));
             },
           ),
           // Classes Tab
-          BlocBuilder<ClassCubit, List<Class>>(
-            builder: (context, classes) {
-              if (classes.isEmpty) {
+          BlocBuilder<ClassCubit, ClassState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state.classes.isEmpty) {
                 return const Center(
                   child: Text('There are no classes.'),
                 );
               }
-              return _buildGrid(
-                  context, classes, (classItem) => _buildClassCard(classItem));
+              return _buildGrid(context, state.classes,
+                  (classItem) => _buildClassCard(classItem));
             },
           ),
         ],
@@ -101,9 +108,19 @@ class _HomePageState extends State<HomePage>
     return Card(
       child: ListTile(
         title: Text(student.name),
+        subtitle: Text('Code: ${student.code}'),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            IconButton(
+              icon: const Icon(Icons.copy),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: student.code));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Code copied to clipboard')),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () {
