@@ -4,10 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:managestudents/blocs/class_cubit.dart';
 import 'package:managestudents/blocs/student_cubit.dart';
+import 'package:managestudents/blocs/test_cubit.dart';
 import 'package:managestudents/config/app_config.dart';
 import 'package:managestudents/config/app_router.dart';
 import 'package:managestudents/config/di.dart';
 import 'package:managestudents/blocs/login_cubit.dart';
+import 'package:managestudents/deck/app_bloc.dart';
 import 'package:managestudents/screens/home_page.dart';
 import 'package:managestudents/screens/login_page.dart';
 
@@ -49,6 +51,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => getIt<LoginCubit>()),
         BlocProvider(create: (_) => getIt<ClassCubit>()),
         BlocProvider(create: (_) => getIt<StudentCubit>()),
+        BlocProvider(create: (_) => getIt<AppCubit>()),
+        BlocProvider(create: (_) => getIt<TestCubit>()),
       ],
       child: MaterialApp(
         home: _getInitialPage(),

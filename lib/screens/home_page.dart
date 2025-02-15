@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:managestudents/blocs/class_cubit.dart';
 import 'package:managestudents/blocs/student_cubit.dart';
+import 'package:managestudents/deck/category_screen_new.dart';
 import 'package:managestudents/models/class_data.dart';
 import 'package:managestudents/models/student_data.dart';
 
@@ -21,8 +22,8 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    // Two tabs: index 0 for Students and index 1 for Classes.
-    _tabController = TabController(length: 2, vsync: this);
+    // Three tabs: index 0 for Students, index 1 for Classes, and index 2 for Categories.
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -41,6 +42,7 @@ class _HomePageState extends State<HomePage>
           tabs: const [
             Tab(text: 'Students'),
             Tab(text: 'Classes'),
+            Tab(text: 'Decks'), // Update the tab text
           ],
         ),
       ),
@@ -75,6 +77,8 @@ class _HomePageState extends State<HomePage>
                   (classItem) => _buildClassCard(classItem));
             },
           ),
+          // Categories Tab
+          CategoryScreenNew(), // Add the new screen here
         ],
       ),
       floatingActionButton: _buildCollapsibleFab(),

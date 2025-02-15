@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:managestudents/deck/category_screen_subfolder_new.dart';
 import 'package:managestudents/models/class_data.dart';
 import 'package:managestudents/models/student_data.dart';
 import 'package:managestudents/screens/class_page.dart';
@@ -21,6 +22,18 @@ class AppRouter {
         final args = settings.arguments as Student?;
         return MaterialPageRoute(
             builder: (_) => StudentFormPage(student: args));
+      case '/category-screen-new':
+        final args = settings.arguments as Map<String, dynamic>;
+        final parentPath = args['parentPath'] as String;
+        final subFolders = args['subFolders'] as List<Map<String, dynamic>>;
+        final parentId = args['folderId'] as String;
+        return MaterialPageRoute(
+          builder: (_) => SubfolderScreen(
+            parentFolderName: parentId,
+            parentPath: parentPath,
+            subFolders: subFolders,
+          ),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
