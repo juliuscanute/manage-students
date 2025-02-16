@@ -11,10 +11,25 @@ class TestRepository {
     if (userId == null) {
       throw Exception('User not authenticated');
     }
-    final testId = _firestore.collection('tests').doc().id;
-    await _firestore.collection('tests').doc(testId).set({
+    final testId = _firestore
+        .collection('tests')
+        .doc(classId)
+        .collection('assignments')
+        .doc()
+        .id;
+
+    // Add teacherId to the tests collection document
+    await _firestore.collection('tests').doc(classId).set({
       'teacherId': userId,
-      'classId': classId,
+    }, SetOptions(merge: true));
+
+    // Add the assignment to the assignments subcollection
+    await _firestore
+        .collection('tests')
+        .doc(classId)
+        .collection('assignments')
+        .doc(testId)
+        .set({
       'title': title,
       'deckId': deckId,
     });
@@ -25,12 +40,32 @@ class TestRepository {
     if (userId == null) {
       throw Exception('User not authenticated');
     }
-    final querySnapshot = await _firestore
+
+    // 1) Find all class documents in /tests that belong to the current teacher
+    final classSnapshot = await _firestore
         .collection('tests')
         .where('teacherId', isEqualTo: userId)
         .get();
-    return querySnapshot.docs
-        .map((doc) => Test.fromFirestore(doc.id, doc.data()))
-        .toList();
+
+    // Initialize an empty list to accumulate all Test objects
+    List<Test> allTests = [];
+
+    // 2) For each class doc, fetch docs in its `assignments` subcollection
+    for (var classDoc in classSnapshot.docs) {
+      final assignmentsSnapshot =
+          await classDoc.reference.collection('assignments').get();
+
+      final tests = assignmentsSnapshot.docs.map((assignmentDoc) {
+        return Test.fromFirestore(
+          assignmentDoc.id,
+          assignmentDoc.data() as Map<String, dynamic>,
+        );
+      }).toList();
+
+      // Add the fetched tests to the allTests list
+      allTests.addAll(tests);
+    }
+
+    return allTests;
   }
 }
